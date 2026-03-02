@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var manager = AuthManager()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if manager.user != nil {
+                VistaPrincipal(authManager: manager)
+            } else {
+                VistaLogin(authManager: manager)
+            }
         }
-        .padding()
     }
 }
 
