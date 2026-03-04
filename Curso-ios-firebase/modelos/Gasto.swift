@@ -18,10 +18,13 @@ struct Gasto: Codable, Identifiable {
     var importe: Double
     var fecha: Date
     
+    var categoria: CategoriaGastos = .sinCategoria // llamamos a enum
+    
     var idUsuario: String // necesario para saber de que usuario es el gasto - el de firebase
     
     // necesario para codificar o decodificar
     enum CodingKeys: String, CodingKey {
-        case id, titulo, importe, fecha, idUsuario
+        case id, titulo, importe, fecha, idUsuario, categoria
     }
 }
+

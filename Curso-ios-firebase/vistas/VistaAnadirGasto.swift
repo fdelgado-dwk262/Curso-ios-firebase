@@ -13,6 +13,7 @@ struct VistaAnadirGasto: View {
     
     @State private var titulo = ""
     @State private var importe: Double = 0.0
+    @State private var categoria : CategoriaGastos = .sinCategoria
     
     
     var body: some View {
@@ -21,6 +22,13 @@ struct VistaAnadirGasto: View {
                 TextField("Concepto (ej, Comprar Ar-🐐)", text: $titulo)
                 TextField("importe", value: $importe, format: .number)
                     .keyboardType(.decimalPad)
+                
+                Picker("Categoría", selection: $categoria) {
+                    ForEach(CategoriaGastos.allCases, id: \.self) { categoria in
+                        Label(categoria.rawValue, systemImage: categoria.nombreIcono)
+                            .tag(categoria)
+                    }
+                }
             }
             .navigationTitle("Nuevo Gasto: ")
             .toolbar {
@@ -29,7 +37,7 @@ struct VistaAnadirGasto: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Guardar") {
-                        viewModel.anadirGasto(titulo: titulo, importe: importe)
+                        viewModel.anadirGasto(titulo: titulo, importe: importe, categoria: categoria)
                         dismiss()
                     }
                     .disabled(titulo.isEmpty || importe == 0)

@@ -14,10 +14,12 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-//            if manager.user != nil {
+            if manager.user != nil {
 //                VistaPrincipal(authManager: manager)
-            if let user = manager.user {
-                VistaGastos(idUsuario: user.uid)
+//            if let user = manager.user {
+                // como queremos cerrar sesión necesitamos un logout y modificamos la linea
+//                VistaGastos(idUsuario: user.uid)
+                VistaGastos(authManager: manager)
             } else {
                 VistaLogin(authManager: manager)
             }
