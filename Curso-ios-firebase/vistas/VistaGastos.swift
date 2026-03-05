@@ -9,62 +9,21 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 
-// TODO: viewmodel temporal para ver que se implementa con un Mock
-@Observable
-class GastosViewModelMock: GastosViewModelProtocol {
-    var gastos: [Gasto]
-    var importeTotal: Double = 15.0
-    private var idUsuario: String
-
-    init(idUsuario: String, gastos: [Gasto] = []) {
-        self.idUsuario = idUsuario
-        self.gastos = gastos
-        
-        // creamos un gasto de pruebas paramostrar
-        let gasto = Gasto(titulo: "demo", importe: 23.00, fecha: Date(), idUsuario: "asdfwqr34t5w3af")
-        self.gastos.append(gasto)
-    }
-
-    func escucharDatos() {
-        // se queda vacia
-    }
-
-    func anadirGasto(titulo: String, importe: Double, categoria: CategoriaGastos) {
-        let gasto = Gasto(
-            titulo: titulo,
-            importe: importe,
-            fecha: Date(),
-            categoria: categoria,
-            idUsuario: idUsuario
-        )
-        gastos.append(gasto)
-    }
-    
-    func borrarGasto(at indices: IndexSet) {}
-
-}
-
 struct VistaGastos: View {
     
     // para el tema del logout
     var authManager: AuthManager
     
-    // puede coger cualquiera de los protocoloes o el Mock que extiende de o el original
-    @State private var viewModel: any GastosViewModelProtocol
+    @State private var viewModel: GastosViewModel
     
     @State private var mostrarAnadir: Bool = false
     
-    // reemplezamos el is usuario por authManager
-//    init(idUsuario: String) {
-        init(authManager: AuthManager) {
+    @State private var gastoEditable: Gasto?
+    
+    init(authManager: AuthManager) {
             self.authManager = authManager
             let idUsuario = authManager.user?.uid ?? ""
             
-        // comentamos o no la que corresponda :
-        
-        // MOCK
-//        _viewModel = State(initialValue: GastosViewModelMock(idUsuario: idUsuario))
-        
         // Datos firebase
         _viewModel = State(initialValue: GastosViewModel(idUsuario: idUsuario))
     }
@@ -84,12 +43,27 @@ struct VistaGastos: View {
                         
                         HStack {
                             
-                            Image(systemName: gasto.categoria.nombreIcono)
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                                .background(gasto.categoria.color.opacity(0.2))
-                                .foregroundStyle(gasto.categoria.color)
-                                .clipShape(Circle())
+                            // nuestro gasto puede o no tener una categoria
+                            if let categoria = viewModel.obtenerCategorias(id: gasto.idCategoria) {
+                                VStack {
+                                    Image(systemName: categoria.icono)
+                                        .foregroundStyle(Color.fromString(categoria.nombreColor))
+                                        .font(.title2)
+                                        .clipShape(Circle())
+                                    Text(categoria.nombre)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            } else {
+                                // se borrra la categoria pero el gasto existe
+                                VStack {
+                                    Image(systemName: "questionmark.circle")
+                                    Text("Sin categoria")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            
                             
                             VStack(alignment: .leading) {
                                 Text(gasto.titulo)
@@ -105,7 +79,11 @@ struct VistaGastos: View {
                                 .font(.subheadline)
                                 .foregroundStyle((gasto.importe >= 0) ? Color.red : Color.green)
                         }
-                        
+                        .contentShape(Rectangle()) // hacemos que la fila entera sea clickeable (HACK)
+                        .onTapGesture {
+                            // al tocar el gasto ester
+                            gastoEditable = gasto
+                        }
                     }
                     // el por debajo sabe lo que debe de hacer y pasando parametros por debajo ??
                     .onDelete(perform: viewModel.borrarGasto)
@@ -134,6 +112,10 @@ struct VistaGastos: View {
             
             .sheet(isPresented: $mostrarAnadir) {
                VistaAnadirGasto(viewModel: viewModel)
+            }
+            // abrimos otro sheet para editar si gastoEditable tiene algo lanza esta sheet
+            .sheet(item: $gastoEditable) { gasto in
+                VistaAnadirGasto(viewModel: viewModel, gastoEditable: gasto)
             }
         }
     }

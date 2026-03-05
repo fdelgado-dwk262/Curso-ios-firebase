@@ -20,7 +20,7 @@ struct VistaLogin: View {
     
     var body: some View {
         VStack(spacing:20){
-            Text(seEstaRegistrando ? "Crear Cuenta" : "Buinevenido/a")
+            Text(seEstaRegistrando ? "Crear Cuenta" : "Bienvenido/a")
                 .font(.largeTitle)
                 .bold()
             TextField("Email", text: $email)

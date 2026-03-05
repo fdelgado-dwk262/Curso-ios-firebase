@@ -19,11 +19,15 @@ struct Categoria: Codable, Identifiable , Hashable{
     
     var idUsuario: String // las categorías son únicas por usuario por eso van asociadas al usuario
     
+    
+    // es necesario tenerlo para poder igualar trasladamso el nombre de la propiedad de la base de datos
+    // a la variable local en el caso siguiente
+    // por ejemplop .- case nombreLocal = "nombre en la base de datos"
     enum CodingKeys: String, CodingKey {
         case id
-        case nombre = "nombre"
+        case nombre = "name"
         case icono = "icon"
-        case nombreColor = "nombreColor"
+        case nombreColor = "color_name"
         case idUsuario
     }
     
@@ -31,7 +35,7 @@ struct Categoria: Codable, Identifiable , Hashable{
 
 // helper
 extension Color {
-    static func fromstring(_ color: String) -> Color {
+    static func fromString(_ color: String) -> Color {
         switch color {
         case "red":
             return .red
