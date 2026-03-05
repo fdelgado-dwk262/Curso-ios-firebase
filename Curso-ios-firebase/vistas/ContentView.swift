@@ -19,7 +19,8 @@ struct ContentView: View {
 //            if let user = manager.user {
                 // como queremos cerrar sesión necesitamos un logout y modificamos la linea
 //                VistaGastos(idUsuario: user.uid)
-                VistaGastos(authManager: manager)
+//                VistaGastos(authManager: manager)
+                VistaInicio(authManager: manager)
             } else {
                 VistaLogin(authManager: manager)
             }
@@ -30,3 +31,8 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
+
+// TODO: cosas que faltan
+// * falta una vista de listado de categorias
+// * falta un ontap gesture en las catagorías para borrar y que llame a la funcion de borrado en cascada

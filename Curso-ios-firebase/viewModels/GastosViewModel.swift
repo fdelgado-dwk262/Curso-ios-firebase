@@ -192,4 +192,41 @@ class GastosViewModel {
     func obtenerCategorias(id: String) -> Categoria? {
         categorias.first { $0.id == id }
     }
+    
+    
+    // Si queremos borrar en cascada ya que no es una base de datos referencial
+    // debemos de realizar el borrado de forma manual
+    // ejemplo .- si al borrar una categoria quisieramos borrar ltodos los gastos asociados
+    // se haría de la sigueinte manera
+    
+    func borrarCategoriaCascada(idCategoria: String) async {
+        // Proceso por lotes .-
+        let batch = db.batch()
+        
+        // tenemos ue borrar la categoría
+        let categoria = db.collection(ConstantesFirestore.coleccionCategorias).document(idCategoria)
+        batch.deleteDocument(categoria)
+        
+        do {
+            // buscamos lo primero todos los gastos asociados
+            let gastosAsociados = try await db.collection(ConstantesFirestore.coleccionGastos)
+                .whereField(Gasto.CodingKeys.idCategoria.rawValue, isEqualTo: idCategoria)
+                .getDocuments()
+            
+            for gasto in gastosAsociados.documents {
+                batch.deleteDocument(gasto.reference)
+            }
+            // comitear para ejecutar el proceso por lotes
+            try await batch.commit()
+            
+            print("Borrado exitoso - de categorias y gastos asociados")
+            
+        } catch {
+            print("Error en el borrado \(error.localizedDescription)")
+        }
+        
+    }
+    
+    
+    
 }
