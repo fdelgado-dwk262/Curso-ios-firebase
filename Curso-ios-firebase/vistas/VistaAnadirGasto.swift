@@ -66,18 +66,7 @@ struct VistaAnadirGasto: View {
                     }
                     .disabled(titulo.isEmpty || importe == 0)
                 }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    
-                    Spacer()
-                    
-                    Button("Añadir Categoria") {
-                        mostrarCategorias = true
-                    }
-                    .buttonStyle(.borderless)
-                    .tint(.orange)
-                    
-                    Spacer()
-                }
+
             }
             .sheet(isPresented: $mostrarCategorias) {
                 mostrarCategorias = false

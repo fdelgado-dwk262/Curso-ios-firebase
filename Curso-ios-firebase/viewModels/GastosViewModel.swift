@@ -186,6 +186,18 @@ class GastosViewModel {
             print("Error guardadno categoria: \(error.localizedDescription)")
         }
     }
+    
+    func actualizarCategoria(_ categoria: Categoria) {
+        guard let idCategoria = categoria.id else { return }
+
+        do {
+            try db.collection(ConstantesFirestore.coleccionCategorias)
+                .document(idCategoria)
+                .setData(from: categoria, merge: true) // modificamos el campo y lo mergeamos dejando los que no se ham modificado
+        } catch {
+            print("Error al actualizar: \(error.localizedDescription)")
+        }
+    }
 
     // funcion de tipo helper que nos ayuda a casar los gastos con las categorías
     // casar la categoria que corresponde a un gasto
@@ -193,6 +205,20 @@ class GastosViewModel {
         categorias.first { $0.id == id }
     }
     
+    // ---------------------------------------
+    
+    
+    func borrarCategorias(at indices: IndexSet) {
+        indices.forEach { indice in
+            let categoria = categorias[indice]
+            
+            // sacamos el id único de la categoria
+            guard let idCategoria = categoria.id else { return }
+            Task {
+                await borrarCategoriaCascada(idCategoria: idCategoria)
+            }
+        }
+    }
     
     // Si queremos borrar en cascada ya que no es una base de datos referencial
     // debemos de realizar el borrado de forma manual
