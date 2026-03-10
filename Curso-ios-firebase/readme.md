@@ -11,7 +11,7 @@
 Configuración de seguridad en Firebase
 se deben de añadir o modificar el fichero que aparece en la pestaña de Reglas 
 
-´´´
+```Firebase
 
 rules_version = '2';
 service cloud.firestore {
@@ -35,4 +35,4 @@ service cloud.firestore {
   }
 }
 
-´´´
+```
